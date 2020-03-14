@@ -1,4 +1,4 @@
-.gitignore
-.gitattributes
+/.gitignore
+/.gitattributes
 **/__pycache__
 /.vscode
