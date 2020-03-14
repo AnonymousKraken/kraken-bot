@@ -1,0 +1,3 @@
+name,description
+help,Shows this message.
+ping,Returns the ping of the bot. Used for testing.
