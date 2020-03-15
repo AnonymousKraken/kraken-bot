@@ -22,7 +22,7 @@ commands:
     perms: NULL
     
   balance: 
-    name: fixmoney
+    name: balance
     description: Shows a player's balance. Shows your own if none specified.
     usage: balance [player]
     aliases: [bal]
@@ -73,7 +73,21 @@ commands:
   shop:
     name: shop
     description: Opens the shop.
-    usage: shop [category|item]
+    usage: shop [$category|item]
+    aliases: [None]
+    perms: NULL
+
+  buy:
+    name: buy
+    description: Buys an item.
+    usage: buy <item> [quantity]
+    aliases: [None]
+    perms: NULL
+  
+  sell:
+    name: sell
+    description: Sells an item (you get back a portion of the cost).
+    usage: sell <item> [quantity]
     aliases: [None]
     perms: NULL
     
@@ -90,6 +104,9 @@ categories:
     - fixmoney
     - givemoney
     - setmoney
+    - shop
+    - buy
+    - sell
 
   admin:
     - execute

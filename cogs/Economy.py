@@ -25,9 +25,15 @@ class Economy(commands.Cog):
             user = ctx.message.mentions[0]
 
         money = str(await sql.getUserMoney(user.id))
-        income = str(await sql.getUserIncome(user.id))
-        if income == "None": 
+
+        income = 0
+        for role in user.roles:
+            if role.id in await sql.getJobIds():
+                income += await sql.getJobIncome(role.id)
+        if income == 0: 
             income = "NOT REGISTERED: 0"
+        else: 
+            income = str(income)
 
         embed = discord.Embed(
             colour = discord.Colour.green()
@@ -90,41 +96,62 @@ class Economy(commands.Cog):
 
     @commands.command()  
     async def shop(self, ctx, detail=None):
-    
+        c = await sql.getCurrency()
+        categories = await sql.getShopCategories()
+        items = await sql.getShopItems()
+
         if detail == None:
             embed = discord.Embed(
-                colour = discord.Colour.orange(),
+                colour = discord.Colour.purple(),
                 title = "Shop"
             )
-            categories = await sql.getShopCategories()
-            print(categories)
+
             for category in categories:
-                print(category)
                 itemStr = "\n".join(await sql.getShopItems(category))
                 embed.add_field(name="**"+category+"**", value=itemStr, inline=False)
 
             await ctx.send(embed=embed)
 
-        '''
-        else:
-            cmdInfo = getCommand(helpInfo, command)
 
-            if cmdInfo == None:
-                await ctx.send(f"Command {command} not found.")
+        elif detail[0] == "$":
+            category = detail[1:].title()
+
+            if category not in categories:
+                await ctx.send("Category not found.")
             
             else:
+
                 embed = discord.Embed(
-                    colour = discord.Colour.orange(),
-                    title = cmdInfo["name"]
+                    colour = discord.Colour.purple(),
+                    title = category
                 )
 
-                embed.add_field(name="**Description**", value=cmdInfo["description"], inline=False)
-                embed.add_field(name="**Usage**", value="!"+cmdInfo["usage"], inline=False)
-                embed.add_field(name="**Aliases**", value=", ".join(cmdInfo["aliases"]), inline=False)
-                embed.add_field(name="**Permissions**", value=cmdInfo["perms"], inline=False)
+                for item in await sql.getShopItems(category):
+                    description = await sql.getItemDescription(item)
+
+                    embed.add_field(name=item, value=description, inline=False)
+
+                await ctx.send(embed=embed)
+            
+        else:
+            item = detail.title()
+            if item not in items:
+                await ctx.send("Item not found.")
+            else:
+                embed = discord.Embed(
+                    colour = discord.Colour.purple(),
+                    title = item
+                )
+
+                embed.add_field(name="**Category**", value=await sql.getItemCategory(item), inline=False)
+                embed.add_field(name="**Description**", value=await sql.getItemDescription(item), inline=False)
+                embed.add_field(name="**Price**", value=str(await sql.getItemPrice(item))+c, inline=False)
 
                 await ctx.send("",embed=embed)
-        '''
+
+    @commands.command()
+    async def buy(self, ctx, item, quanity=1):
+        pass
 
 def setup(bot):
     bot.add_cog(Economy(bot))
