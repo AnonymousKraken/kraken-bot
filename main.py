@@ -2,8 +2,10 @@ import discord
 from discord.ext import commands
 import asyncio
 
+with open("storage/token.txt", newline="") as tokenFile:
+            TOKEN = tokenFile.read()
 
-TOKEN = "Njg3MDA0ODc3OTg5MzQ3NDcz.Xm4iFA.l93BavfSudqlD5pDWi9cQWUMDjg"
+print(TOKEN)
 
 
 bot = commands.Bot(command_prefix='!')

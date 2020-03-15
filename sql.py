@@ -59,7 +59,7 @@ async def addUserMoney(id, amount):
 
 async def createUser(id, money=0):
     data = await sqlite.connect(PATH)
-    await data.execute(f"INSERT INTO Userdata VALUES({id},{money},0,0)")
+    await data.execute(f"INSERT INTO Userdata VALUES({id},{money},0)")
     await data.commit()
 
 

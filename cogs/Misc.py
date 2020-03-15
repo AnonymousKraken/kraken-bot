@@ -8,7 +8,7 @@ class Misc(commands.Cog):
 
 
     @commands.command()
-    async def ping(self, ctx, description="returns ping of bot"):
+    async def ping(self, ctx):
         latency = self.bot.latency * 1000
         await ctx.send("Responding with ping of " + str(round(latency, 2)) + "ms.")
 

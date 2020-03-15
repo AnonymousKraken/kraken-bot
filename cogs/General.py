@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-import yaml
+import yaml, sql
 
 
 class General(commands.Cog):
@@ -13,15 +13,14 @@ class General(commands.Cog):
     async def on_member_join(self, member):
         print(member.name, "just joined the server.")
         
-        allChannels = self.bot.get_all_channels()
-        for c in allChannels:
-            print(c.id, c.name)
-        mainChannel = [channel for channel in allChannels if int(channel.id) == 688057033886662770]
-        jobChannel = [channel for channel in allChannels if int(channel.id) == 688067828242448428]
-        print(mainChannel)
+        mainChannel = self.bot.get_channel(688057033886662770)
+        jobChannel = self.bot.get_channel(688067828242448428)
         
-        await mainChannel[0].send("Welcome to the UAPR, <@member.id>!")
-        await jobChannel[0].send("Welcome! You can sign up for a job here.")
+        await mainChannel.send(f"Welcome to the UAPR, <@{member.id}>!")
+        await jobChannel.send("Welcome! You can sign up for a job here.")
+    
+        if not await sql.userExists(member.id):
+            await sql.createUser(member.id)
 
     
     @commands.command()
