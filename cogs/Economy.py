@@ -51,7 +51,7 @@ class Economy(commands.Cog):
         else:
             for user in users:
                 await sql.addUserMoney(int(user.id), int(amount))
-                await ctx.send(f"Gave {user.name} {amount+c}.")
+                await ctx.send(f"Gave <@{user.id}> {amount+c}.")
 
     
     @commands.has_any_role("Administrator")
@@ -65,7 +65,7 @@ class Economy(commands.Cog):
         else:
             for user in users:
                 await sql.setUserMoney(int(user.id), str(amount))
-                await ctx.send(f"Set {user.name}\'s balance to {amount+c}.")
+                await ctx.send(f"Set <@{user.name}>\'s balance to {amount+c}.")
 
 
     @commands.has_any_role("Administrator")
@@ -88,6 +88,43 @@ class Economy(commands.Cog):
         # await ctx.send("Restarted the economy.")
 
 
+    @commands.command()  
+    async def shop(self, ctx, detail=None):
+    
+        if detail == None:
+            embed = discord.Embed(
+                colour = discord.Colour.orange(),
+                title = "Shop"
+            )
+            categories = await sql.getShopCategories()
+            print(categories)
+            for category in categories:
+                print(category)
+                itemStr = "\n".join(await sql.getShopItems(category))
+                embed.add_field(name="**"+category+"**", value=itemStr, inline=False)
+
+            await ctx.send(embed=embed)
+
+        '''
+        else:
+            cmdInfo = getCommand(helpInfo, command)
+
+            if cmdInfo == None:
+                await ctx.send(f"Command {command} not found.")
+            
+            else:
+                embed = discord.Embed(
+                    colour = discord.Colour.orange(),
+                    title = cmdInfo["name"]
+                )
+
+                embed.add_field(name="**Description**", value=cmdInfo["description"], inline=False)
+                embed.add_field(name="**Usage**", value="!"+cmdInfo["usage"], inline=False)
+                embed.add_field(name="**Aliases**", value=", ".join(cmdInfo["aliases"]), inline=False)
+                embed.add_field(name="**Permissions**", value=cmdInfo["perms"], inline=False)
+
+                await ctx.send("",embed=embed)
+        '''
 
 def setup(bot):
     bot.add_cog(Economy(bot))

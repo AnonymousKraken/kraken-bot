@@ -1,0 +1,96 @@
+cmd-defaults: &defaults
+  name: NULL
+  description: NULL
+  usage: NULL
+  aliases: [None]
+  perms: NULL
+
+commands:
+
+  help: 
+    name: help
+    description: Shows this message.
+    usage: help [command]
+    aliases: [None]
+    perms: NULL
+    
+  economy: 
+    name: economy
+    description: Shows the total amount of money in circulation.
+    usage: economy
+    aliases: [None]
+    perms: NULL
+    
+  balance: 
+    name: fixmoney
+    description: Shows a player's balance. Shows your own if none specified.
+    usage: balance [player]
+    aliases: [bal]
+    perms: NULL
+    
+  fixmoney: 
+    name: fixmoney
+    description: Fix the economy system, refreshing everything.
+    usage: fixmoney
+    aliases: [None]
+    perms: Administrator
+    
+  givemoney: 
+    name: givemoney
+    description: Give a player money.
+    usage: givemoney <player>
+    aliases: [None]
+    perms: Administrator
+    
+  setmoney: 
+    name: setmoney
+    description: Set a player's balance.
+    usage: setmoney <player>
+    aliases: [None]
+    perms: Administrator
+    
+  execute: 
+    name: execute
+    description: Executes a line of code.
+    usage: execute <"code">
+    aliases: [None]
+    perms: Administrator
+
+  sql: 
+    name: sql
+    description: Execute an SQL command to the database.
+    usage: sql <"command">
+    aliases: [None]
+    perms: Administrator
+
+  purge:
+    name: purge
+    description: Deletes mulitple messages at once.
+    usage: purge [amount]
+    aliases: [None]
+    perms: Administrator
+
+  shop:
+    name: shop
+    description: Opens the shop.
+    usage: shop [category|item]
+    aliases: [None]
+    perms: NULL
+    
+
+categories:
+
+  general:
+    - help
+    - purge
+  
+  economy:
+    - economy
+    - balance
+    - fixmoney
+    - givemoney
+    - setmoney
+
+  admin:
+    - execute
+    - sql

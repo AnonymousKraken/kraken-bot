@@ -3,6 +3,10 @@ import aiosqlite3 as sqlite
 
 PATH = "storage/data.db"
 
+
+# USER FUNCTIONS
+
+
 async def userExists(id):
     data = await sqlite.connect(PATH)
     cur = await data.execute(f"SELECT Id FROM Userdata WHERE Userdata.Id = {id};")
@@ -65,7 +69,45 @@ async def createUser(id, money=0):
     await data.execute(f"INSERT INTO Userdata VALUES({id},{money},0,0,0,0)")
     await data.commit()
 
+
+# SHOP FUNCTIONS
+
+
+async def getShopCategories():
+    data = await sqlite.connect(PATH)
+    cur = await data.execute(f"SELECT DISTINCT Category FROM Shop")
+    print([item[0] for item in await cur.fetchall()])
+    return [item[0] for item in await cur.fetchall()]
+
+
+async def getShopItems(category = None):
+    data = await sqlite.connect(PATH)
+    if category == None:
+        cur = await data.execute("SELECT Name FROM Shop")
+    else:
+        cur = await data.execute(f"SELECT Name FROM Shop WHERE Category = {category};")
+    return list(await cur.fetchall())
+
+
+async def getShopItem(name):
+    data = await sqlite.connect(PATH)
+    cur = await data.execute(f"SELECT * FROM Shop WHERE Name = {name};")
+    return list(await cur.fetchall())
+
+
+# MISCELLANEOUS FUNCTIONS
+
+
 async def getCurrency():
     data = await sqlite.connect(PATH)
-    cur = await data.execute(f"SELECT Currency FROM Globals")
+    cur = await data.execute("SELECT Currency FROM Globals")
     return list(await cur.fetchone())[0]
+
+
+async def execute(cmd):
+    data = await sqlite.connect(PATH)
+    await data.execute(cmd)
+    await data.commit()
+
+
+asyncio.run(getShopCategories())

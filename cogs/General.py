@@ -11,31 +11,87 @@ class General(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        print(member.id, "just joined the server.")
+        print(member.name, "just joined the server.")
         
-        role = discord.utils.get(member.server.roles, name="VERIFY")
-        await member.add_roles(member, role)
+        allChannels = self.bot.get_all_channels()
+        for c in allChannels:
+            print(c.id, c.name)
+        mainChannel = [channel for channel in allChannels if int(channel.id) == 688057033886662770]
+        jobChannel = [channel for channel in allChannels if int(channel.id) == 688067828242448428]
+        print(mainChannel)
         
-        verifyChannel = [channel for channel in self.bot.get_all_channels() if channel.name == "verify"][0]
-        await verifyChannel.send("Welcome! Please enter your name and school.")
+        await mainChannel[0].send("Welcome to the UAPR, <@member.id>!")
+        await jobChannel[0].send("Welcome! You can sign up for a job here.")
 
     
     @commands.command()
-    async def help(self, ctx):
+    async def help(self, ctx, command=None):
 
-        with open("storage/help.yml", newline="") as helpYaml:
+
+        def getCommand(helpInfo, cmd):
+            for name,command in helpInfo["commands"].items():
+                if cmd == command["name"] or cmd in command["aliases"]:
+                    return command
+                    
+            return None
+
+
+        with open("storage/help.yaml", newline="") as helpYaml:
             helpInfo = yaml.safe_load(helpYaml)
         
-        for category, info in helpInfo.items():
+
+        if command == None:
             embed = discord.Embed(
                 colour = discord.Colour.orange(),
-                title = category
+                title = "Help"
             )
-            for command,description in info.items():
-                embed.add_field(name=command, value=description, inline=False)
 
-            await ctx.send(embed=embed)
+            for category, cmds in helpInfo["categories"].items():
+
+                commandList = []
+                for cmd in cmds:
+                    if helpInfo["commands"][cmd]["perms"] == "Administrator":
+                        commandList.append("* " + cmd)
+                    else:
+                        commandList.append("- " + cmd)
+                
+                commandStr = "\n".join(commandList)
+                embed.add_field(name="**"+category+"**", value=commandStr, inline=False)
+
+            await ctx.send("",embed=embed)
+
+
+        else:
+            cmdInfo = getCommand(helpInfo, command)
+
+            if cmdInfo == None:
+                await ctx.send(f"Command {command} not found.")
+            
+            else:
+                embed = discord.Embed(
+                    colour = discord.Colour.orange(),
+                    title = cmdInfo["name"]
+                )
+
+                embed.add_field(name="**Description**", value=cmdInfo["description"], inline=False)
+                embed.add_field(name="**Usage**", value="!"+cmdInfo["usage"], inline=False)
+                embed.add_field(name="**Aliases**", value=", ".join(cmdInfo["aliases"]), inline=False)
+                embed.add_field(name="**Permissions**", value=cmdInfo["perms"], inline=False)
+
+                await ctx.send("",embed=embed)
+
+
+    @commands.has_any_role("Administrator")
+    @commands.command()
+    async def purge(self, ctx, amount=None):
+        if amount != None:
+            deleted = await ctx.channel.purge(limit=int(amount)+1)
+        else:
+            deleted = await ctx.channel.purge()
+        await ctx.send(f'<@{ctx.author.id}> deleted {len(deleted)-1} message(s)')
+
+
 
 
 def setup(bot):
-    bot.add_cog(General(bot))
+    bot.add_cog(General(bot)) 
